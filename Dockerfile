@@ -91,6 +91,7 @@ ENV PACKAGES="\
   ca-certificates \
   python2 \
   py-setuptools \
+  build-base \
 "
 
 RUN echo \
