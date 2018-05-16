@@ -9,10 +9,10 @@ RUN mkdir -p /usr/local/etc \
     echo 'update: --no-document'; \
   } >> /usr/local/etc/gemrc
 
-ENV RUBY_MAJOR 2.2
-ENV RUBY_VERSION 2.2.5
-ENV RUBY_DOWNLOAD_SHA256 30c4b31697a4ca4ea0c8db8ad30cf45e6690a0f09687e5d483c933c03ca335e3
-ENV RUBYGEMS_VERSION 2.6.4
+ENV RUBY_MAJOR 2.5
+ENV RUBY_VERSION 2.5.1
+ENV RUBY_DOWNLOAD_SHA512 67badcd96fd3808cafd6bc86c970cd83aee7e5ec682f34e7353663d96211a6af314a4c818e537ec8ca51fbc0737aac4e28e0ebacf1a4d1e13db558b623a0f6b1
+ENV RUBYGEMS_VERSION 2.7.4
 
 # some of ruby's build scripts are written in ruby
 # we purge this later to make sure our final image uses what we just built
@@ -43,7 +43,7 @@ RUN set -ex \
     yaml-dev \
     zlib-dev \
   && curl -fSL -o ruby.tar.gz "http://cache.ruby-lang.org/pub/ruby/$RUBY_MAJOR/ruby-$RUBY_VERSION.tar.gz" \
-  && echo "$RUBY_DOWNLOAD_SHA256 *ruby.tar.gz" | sha256sum -c - \
+  && echo "$RUBY_DOWNLOAD_SHA512 *ruby.tar.gz" | sha512sum -c - \
   && mkdir -p /usr/src \
   && tar -xzf ruby.tar.gz -C /usr/src \
   && mv "/usr/src/ruby-$RUBY_VERSION" /usr/src/ruby \
@@ -76,18 +76,5 @@ RUN set -ex \
   && gem update --system $RUBYGEMS_VERSION \
   && rm -r /usr/src/ruby
 
-ENV BUNDLER_VERSION 1.13.1
-
-RUN gem install bundler --version "$BUNDLER_VERSION"
-
-# install things globally, for great justice
-# and don't create ".bundle" in all our apps
-ENV GEM_HOME /usr/local/bundle
-ENV BUNDLE_PATH="$GEM_HOME" \
-  BUNDLE_BIN="$GEM_HOME/bin" \
-  BUNDLE_SILENCE_ROOT_WARNING=1 \
-  BUNDLE_APP_CONFIG="$GEM_HOME"
-ENV PATH $BUNDLE_BIN:$PATH
-RUN mkdir -p "$GEM_HOME" "$BUNDLE_BIN" \
-  && chmod 777 "$GEM_HOME" "$BUNDLE_BIN"
-
+# Install JavaJRE 7
+RUN apk --update add openjdk7-jre
