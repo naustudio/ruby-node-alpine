@@ -43,7 +43,6 @@ RUN set -ex \
     yaml-dev \
     zlib-dev \
     openjdk8-jre \
-    python \
   && curl -fSL -o ruby.tar.gz "http://cache.ruby-lang.org/pub/ruby/$RUBY_MAJOR/ruby-$RUBY_VERSION.tar.gz" \
   && echo "$RUBY_DOWNLOAD_SHA512 *ruby.tar.gz" | sha512sum -c - \
   && mkdir -p /usr/src \
@@ -77,3 +76,33 @@ RUN set -ex \
   && apk del .ruby-builddeps \
   && gem update --system $RUBYGEMS_VERSION \
   && rm -r /usr/src/ruby
+
+
+# From: https://hub.docker.com/r/jfloff/alpine-python/~/dockerfile/
+# These are always installed. Notes:
+#   * dumb-init: a proper init system for containers, to reap zombie children
+#   * bash: For entrypoint, and debugging
+#   * ca-certificates: for SSL verification during Pip and easy_install
+#   * python: the binaries themselves
+#   * py-setuptools: required only in major version 2, installs easy_install so we can install Pip.
+ENV PACKAGES="\
+  dumb-init \
+  bash \
+  ca-certificates \
+  python2 \
+  py-setuptools \
+"
+
+RUN echo \
+  # Add the packages, with a CDN-breakage fallback if needed
+  && apk add --no-cache $PACKAGES\
+  # make some useful symlinks that are expected to exist
+  && if [[ ! -e /usr/bin/python ]];        then ln -sf /usr/bin/python2.7 /usr/bin/python; fi \
+  && if [[ ! -e /usr/bin/python-config ]]; then ln -sf /usr/bin/python2.7-config /usr/bin/python-config; fi \
+  && if [[ ! -e /usr/bin/easy_install ]];  then ln -sf /usr/bin/easy_install-2.7 /usr/bin/easy_install; fi \
+
+  # Install and upgrade Pip
+  && easy_install pip \
+  && pip install --upgrade pip \
+  && if [[ ! -e /usr/bin/pip ]]; then ln -sf /usr/bin/pip2.7 /usr/bin/pip; fi \
+  && echo
