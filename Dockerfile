@@ -42,6 +42,7 @@ RUN set -ex \
     ruby \
     yaml-dev \
     zlib-dev \
+    openjdk8-jre \
   && curl -fSL -o ruby.tar.gz "http://cache.ruby-lang.org/pub/ruby/$RUBY_MAJOR/ruby-$RUBY_VERSION.tar.gz" \
   && echo "$RUBY_DOWNLOAD_SHA512 *ruby.tar.gz" | sha512sum -c - \
   && mkdir -p /usr/src \
@@ -75,6 +76,3 @@ RUN set -ex \
   && apk del .ruby-builddeps \
   && gem update --system $RUBYGEMS_VERSION \
   && rm -r /usr/src/ruby
-
-# Install JavaJRE 7
-RUN apk --update add openjdk7-jre
