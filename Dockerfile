@@ -1,4 +1,4 @@
-FROM mhart/alpine-node:latest
+FROM mhart/alpine-node:8.11.2
 
 ## ruby alpine docker hub library
 
