@@ -102,13 +102,9 @@ RUN { \
 ENV JAVA_HOME /usr/lib/jvm/java-1.8-openjdk/jre
 ENV PATH $PATH:/usr/lib/jvm/java-1.8-openjdk/jre/bin:/usr/lib/jvm/java-1.8-openjdk/bin
 
-ENV JAVA_VERSION 8u151
-ENV JAVA_ALPINE_VERSION 8.151.12-r0
-
 RUN set -x \
-  && apk add --no-cache \
-    openjdk8-jre="$JAVA_ALPINE_VERSION" \
-&& [ "$JAVA_HOME" = "$(docker-java-home)" ]
+  && apk add --no-cache openjdk8-jre \
+  && [ "$JAVA_HOME" = "$(docker-java-home)" ]
 
 # From: https://hub.docker.com/r/jfloff/alpine-python/~/dockerfile/
 # These are always installed. Notes:
